@@ -1,2 +1,10 @@
-# Claude-Code
-Building production ready projects with Claude Code using Anthropic paid models, Claude Code using, OpenRouter free models and Claude Code using locally hosted models like qwen3.5:9b, gpt-oss:20bon on Ollama
+# Anthropic | Claude-Code
+Building projects with Claude Code
+
+# 3 Tiers:  
+
+| S.No | Tier | Cost | Drawbacks | Purpose |
+|------|------|------|-----------|---------|
+| 1.   | Claude-Code using Anthropic models | 20~100 USD per month | * Costs money | Build PROD project |
+| 2.   | Claude-Code using, OpenRouter free models | 5 USD | * Rate-limited <br/> * Frequent Timeouts <br/> * Small Context Window <br/> * Privacy Risks | learning |
+|3.    | Claude-Code using models hosted locally on Ollama | Free | * Slow <br/> * Very Small Context Window | learning and understanding under the hood |
