@@ -53,6 +53,7 @@ func init() {
 	addFlags.StringP("note", "n", "", "Note text (optional)")
 	_ = addCmd.MarkFlagRequired("id")
 	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(listCmd)
 }
 
 // runInit validates flags and writes config file.
