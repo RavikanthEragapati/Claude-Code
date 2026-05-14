@@ -4,6 +4,7 @@ import (
     "fmt"
     "github.com/spf13/cobra"
     "example.com/pm-cli/pkg/storage"
+    "time"
 )
 
 var listID string
@@ -39,7 +40,7 @@ func runList(cmd *cobra.Command, args []string) error {
     if listID != "" {
         for _, t := range tasks {
             if t.StoryID == listID {
-                fmt.Printf("ID: %s\nTitle: %s\n", t.StoryID, t.Title)
+                fmt.Printf("ID: %s\nTitle: %s\nCreated At: %s\n", t.StoryID, t.Title, t.CreatedAt.Format(time.RFC3339))
                 if len(t.Notes) > 0 {
                     fmt.Println("Notes:")
                     for _, n := range t.Notes {
@@ -59,7 +60,7 @@ func runList(cmd *cobra.Command, args []string) error {
     }
     fmt.Printf("Tasks for sprint %d:\n", sprint)
     for _, t := range tasks {
-        fmt.Printf("- %s: %s\n", t.StoryID, t.Title)
+        fmt.Printf("- %s: %s (Created: %s)\n", t.StoryID, t.Title, t.CreatedAt.Format(time.RFC3339))
     }
     return nil
 }

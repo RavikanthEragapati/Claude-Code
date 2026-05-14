@@ -7,14 +7,16 @@ import (
     "path/filepath"
     "regexp"
     "strings"
+    "time"
 )
 
 var storyIDRegexp = regexp.MustCompile(`^[0-9]+$`)
 
 type TaskEntry struct {
-    StoryID string   `json:"storyID"`
-    Title   string   `json:"title"`
-    Notes   []string `json:"notes,omitempty"`
+    StoryID   string    `json:"storyID"`
+    Title     string    `json:"title"`
+    Notes     []string  `json:"notes,omitempty"`
+    CreatedAt time.Time `json:"created_at"`
 }
 
 // BaseDir returns the base directory for storing sprint data.
@@ -53,6 +55,12 @@ func LoadTasks(sprintNumber int) ([]TaskEntry, error) {
     if len(data) > 0 {
         if err := json.Unmarshal(data, &tasks); err != nil {
             return nil, err
+        }
+        // Migration: set CreatedAt to now for entries missing it (zero value).
+        for i := range tasks {
+            if tasks[i].CreatedAt.IsZero() {
+                tasks[i].CreatedAt = time.Now()
+            }
         }
     }
     return tasks, nil
@@ -110,7 +118,7 @@ func AddStory(sprintNumber int, storyID, title string) error {
         }
     }
     // If not found, append a new story entry.
-    tasks = append(tasks, TaskEntry{StoryID: storyID, Title: title})
+    tasks = append(tasks, TaskEntry{StoryID: storyID, Title: title, CreatedAt: time.Now()})
     return SaveTasks(sprintNumber, tasks)
 }
 
