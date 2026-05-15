@@ -17,6 +17,16 @@
   {
     "storyID": "2",
     "title": "this is 2 story",
+    "notes": [
+      {
+        "text": "this is note on id 1; note 1",
+        "created_at": "2026-05-14T20:41:33.740117-04:00"
+      },
+      {
+        "text": "this is note on id 1; note 1",
+        "created_at": "2026-05-14T20:42:23.196913-04:00"
+      }
+    ],
     "created_at": "2026-05-14T20:07:17.786099-04:00"
   },
   {
