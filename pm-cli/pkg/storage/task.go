@@ -12,10 +12,15 @@ import (
 
 var storyIDRegexp = regexp.MustCompile(`^[0-9]+$`)
 
+type Note struct {
+    Text      string    `json:"text"`
+    CreatedAt time.Time `json:"created_at"`
+}
+
 type TaskEntry struct {
     StoryID   string    `json:"storyID"`
     Title     string    `json:"title"`
-    Notes     []string  `json:"notes,omitempty"`
+    Notes     []Note   `json:"notes,omitempty"`
     CreatedAt time.Time `json:"created_at"`
 }
 
@@ -51,17 +56,42 @@ func LoadTasks(sprintNumber int) ([]TaskEntry, error) {
         }
         return nil, err
     }
+    if len(data) == 0 {
+        return []TaskEntry{}, nil
+    }
+    // Unmarshal into a slice of raw tasks to handle legacy notes format.
+    var rawTasks []struct {
+        StoryID   string          `json:"storyID"`
+        Title     string          `json:"title"`
+        NotesRaw  json.RawMessage `json:"notes,omitempty"`
+        CreatedAt time.Time       `json:"created_at"`
+    }
+    if err := json.Unmarshal(data, &rawTasks); err != nil {
+        return nil, err
+    }
     var tasks []TaskEntry
-    if len(data) > 0 {
-        if err := json.Unmarshal(data, &tasks); err != nil {
-            return nil, err
+    for _, rt := range rawTasks {
+        // Ensure CreatedAt is set.
+        if rt.CreatedAt.IsZero() {
+            rt.CreatedAt = time.Now()
         }
-        // Migration: set CreatedAt to now for entries missing it (zero value).
-        for i := range tasks {
-            if tasks[i].CreatedAt.IsZero() {
-                tasks[i].CreatedAt = time.Now()
+        // Decode notes.
+        var notes []Note
+        if len(rt.NotesRaw) > 0 {
+            // Try to unmarshal as []Note first.
+            if err := json.Unmarshal(rt.NotesRaw, &notes); err != nil {
+                // Fallback: legacy []string.
+                var oldNotes []string
+                if err2 := json.Unmarshal(rt.NotesRaw, &oldNotes); err2 == nil {
+                    for _, txt := range oldNotes {
+                        notes = append(notes, Note{Text: txt, CreatedAt: time.Now()})
+                    }
+                } else {
+                    // If even that fails, keep notes empty.
+                }
             }
         }
+        tasks = append(tasks, TaskEntry{StoryID: rt.StoryID, Title: rt.Title, Notes: notes, CreatedAt: rt.CreatedAt})
     }
     return tasks, nil
 }
@@ -133,7 +163,8 @@ func AddNote(sprintNumber int, storyID, note string) error {
     }
     for i := range tasks {
         if tasks[i].StoryID == storyID {
-            tasks[i].Notes = append(tasks[i].Notes, note)
+            // Append a Note object with current timestamp
+            tasks[i].Notes = append(tasks[i].Notes, Note{Text: note, CreatedAt: time.Now()})
             return SaveTasks(sprintNumber, tasks)
         }
     }

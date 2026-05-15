@@ -44,7 +44,7 @@ func runList(cmd *cobra.Command, args []string) error {
                 if len(t.Notes) > 0 {
                     fmt.Println("Notes:")
                     for _, n := range t.Notes {
-                        fmt.Printf("- %s\n", n)
+                        fmt.Printf("- %s (Created: %s)\n", n.Text, n.CreatedAt.Format(time.RFC3339))
                     }
                 }
                 return nil

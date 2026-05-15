@@ -59,8 +59,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - [x] Create Go module, root command, and sub‑commands (`init`, `add`).
 - [x] Implement config and task storage.
 - [x] Add `list` sub‑command.
-- [ ] Add datetime field to TaskEntry json at root level.
-- [ ] Add datetime field to Notes[] in TaskEntry json make notes an object.
+- [x] Add datetime field to TaskEntry json at root level.
+- [x] Add datetime field to Notes[] in TaskEntry json make notes an object.
+- [ ] Update the command output to display in table format.
 - [ ] Add `brag` sub‑command.
 - [ ] Add JSON schema validation for inputs.
 - [ ] Write unit tests for storage and command handlers.
